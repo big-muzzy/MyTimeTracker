@@ -1,0 +1,2 @@
+# MyTimeTracker
+Simple time tracker
