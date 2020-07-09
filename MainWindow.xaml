@@ -1,0 +1,135 @@
+﻿<Window x:Class="MyTimeTracker.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:src="clr-namespace:MyTimeTracker"
+    Title="MyTimeTracker" Height="500" Width="800" Closed="Window_Closed" 
+    Style="{StaticResource VS2012WindowStyle}" ResizeMode="CanResizeWithGrip" 
+    Activated="Window_Activated">
+  <Grid Name="mainGrid" Background="AliceBlue"
+        MouseLeftButtonUp="OnMouseLeftButtonUp"
+        MouseMove="OnMouseMove">
+    <Grid.Resources>
+      <src:DateConverter x:Key="dateConverter"/>
+      <src:VisibilityCollapseConverter x:Key="visibilityCollapseConverter" />
+      <src:IsExistConverter x:Key="isExistConverter"/>
+      <src:FontWeightConverter x:Key="fontWeightConverter" />
+      <src:StartStopTextConverter x:Key="startStopTextConverter"/>
+      <BitmapImage x:Key="DragInsertImage" UriSource="pack://application:,,,/Resources/DragInsert.png"/>
+    </Grid.Resources>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <Menu Height="22" Name="mainMenu" VerticalAlignment="Top" Grid.Row="0">
+      <MenuItem Name="mFile" Header="Файл">
+        <MenuItem Name="mFileSave" Header="Сохранить" Click="mFileSave_Click"/>
+        <MenuItem Name="mFileOpen" Header="Открыть" Click="mFileOpen_Click"/>
+        <MenuItem Name="mFileExit" Header="Выход" Click="mFileExit_Click"/>
+      </MenuItem>
+      <MenuItem Name="mTask" Header="Задачи">
+        <MenuItem Name="mProjectAdd" Header="Добавить новый проект" Click="mProjectAdd_Click"/>
+        <MenuItem Name="mTaskAdd" Header="Добавить задачу" Click="mTaskAdd_Click"/>
+        <MenuItem Name="mTaskRemove" Header="Удалить задачу" Click="mTaskRemove_Click"/>
+      </MenuItem>
+      <MenuItem Name="mReport" Header="Отчет">
+        <MenuItem Name="mMakeReport" Header="Составить отчет" Click="mMakeReport_Click"/>
+      </MenuItem>
+      <MenuItem Name="mSettings" Header="Настройки">
+        <MenuItem Name="mSettingsSet" Header="Настройки" Click="mSettingsSet_Click"/>
+      </MenuItem>
+      <MenuItem Name="mHelp" Header="Справка">
+        <MenuItem Name="mHelpAbout" Header="О программе" Click="mHelpAbout_Click"/>
+      </MenuItem>
+    </Menu>
+    <ToolBar Height="26" Name="mainToolBar" VerticalAlignment="Top" Grid.Row="1" >
+      <Button Name="tbStartStop" Click="tbStartStop_Click" Content="Старт"/>
+      <Separator/>
+      <Button Name="tbSave" Click="mFileSave_Click">Сохранить</Button>
+      <Separator/>
+      <Button Name="tbAddProject" Click="mProjectAdd_Click">Добавить новый проект</Button>
+      <Button Name="tbAddTask" Click="mTaskAdd_Click">Добавить задачу</Button>
+      <Button Name="tbRemTask" Click="mTaskRemove_Click">Удалить задачу</Button>
+      <Separator/>
+      <Button Name="tbReport" Click="mMakeReport_Click">Отчет</Button>
+      <Separator/>
+      <Button Name="tbExport" Click="tbExport_Click">Экспорт</Button>
+      <Button Name="tbImport" Click="tbImport_Click">Импорт</Button>
+    </ToolBar>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <DataGrid Name="ProjectGrid"
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      SelectionMode="Single" 
+                      Background="#E5F1E4"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Vertical"
+                      ClipboardCopyMode="IncludeHeader"
+                      VerticalGridLinesBrush="#C6D7C5"
+                      SelectionUnit="FullRow"                      
+                      Grid.Column="0"
+                      IsReadOnly="True"
+                      MouseDoubleClick="ProjectGrid_MouseDoubleClick"
+                      CanUserAddRows="False"
+                      HorizontalScrollBarVisibility="Disabled"
+                      PreviewMouseLeftButtonDown="OnMouseLeftButtonDown"
+
+                >
+        <DataGrid.RowStyle>
+          <Style TargetType="DataGridRow">
+            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource visibilityCollapseConverter}}"/>
+            <Setter Property="FontWeight" Value="{Binding HasParent, Converter={StaticResource fontWeightConverter}}"/>
+          </Style>
+        </DataGrid.RowStyle>
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Проект/Задача" Width="*" 
+                                            CanUserReorder="False" CanUserSort="False">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <src:TaskCell Item="{Binding}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Binding="{Binding TotalDurationToday, Mode=OneWay, Converter={StaticResource dateConverter}}" 
+                                        Header="Сегодня" CanUserReorder="False" CanUserSort="False" Width="Auto"/>
+          <DataGridTextColumn Binding="{Binding TotalDuration, Mode=OneWay, Converter={StaticResource dateConverter}}" 
+                                        Header="Всего" CanUserReorder="False" CanUserSort="False" Width="Auto"/>
+        </DataGrid.Columns>
+
+      </DataGrid>
+
+      <GridSplitter Grid.Column="1" HorizontalAlignment="Center" Width="5" VerticalAlignment="Stretch" />
+
+      <src:TaskDetails x:Name="CurrentTaskDetails" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                       Item="{Binding ElementName=ProjectGrid, Path=SelectedItem}"
+                       Visibility="{Binding ElementName=ProjectGrid, Path=SelectedItem, Converter={StaticResource isExistConverter}}"/>
+    </Grid>
+
+    <StatusBar Name="mainStatusStrip" Grid.Row="3" VerticalAlignment="Bottom">
+      <Label Name="slStatus">Отсчёт не вдется</Label>
+      <Separator/>
+      <Label Content="Отработано сегодня: "/>
+      <Label Content="{Binding TotalDudationToday, Mode=OneWay, Converter={StaticResource dateConverter}, 
+                                RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+    </StatusBar>
+
+    <Popup Name="DragPopup" AllowsTransparency="True" Visibility="Visible" IsOpen="False" Placement="Relative" PlacementTarget="{Binding ElementName=ProjectGrid}">
+      <Border BorderBrush="LightSteelBlue" BorderThickness="2" Background="White" Opacity="0.6">
+        <StackPanel Orientation="Horizontal" Margin="4,3,8,3">
+          <Image Width="16" Height="16" Source="{StaticResource DragInsertImage}" />
+          <TextBlock FontWeight="Normal" FontSize="{Binding ElementName=ProjectGrid, Path=FontSize}" Margin="8,0,0,0"
+                 Text="{Binding DraggedItem.Name, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+        </StackPanel>
+      </Border>
+    </Popup>
+
+  </Grid>
+
+</Window>

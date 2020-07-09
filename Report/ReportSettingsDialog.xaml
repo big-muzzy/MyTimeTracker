@@ -1,0 +1,68 @@
+﻿<Window x:Class="MyTimeTracker.ReportSettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Настройки отчета" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" 
+        ResizeMode="NoResize" ShowInTaskbar="False"
+        Style="{StaticResource VS2012WindowStyle}">
+  <Grid Background="AliceBlue">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <GroupBox Header="Период времени" Grid.Row="0" Height="103" VerticalAlignment="Bottom">
+      <StackPanel Orientation="Vertical">
+        <RadioButton Content="Весь период времени" Name="rbFullTime" IsChecked="True" GroupName="Period"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <RadioButton Content="За период:" Name="rbFixedPeriod" GroupName="Period"/>
+          <ComboBox Width="120" Margin="8 0 0 0" Name="cbFixedPeriod"
+                              IsEnabled="{Binding ElementName=rbFixedPeriod, Path=IsChecked}">
+            <ComboBoxItem Name="cbiDay" Content="День" IsSelected="True"/>
+            <ComboBoxItem Name="cbiWeek" Content="Неделя" />
+            <ComboBoxItem Name="cbiMonth" Content="Месяц" />
+          </ComboBox>
+        </StackPanel>
+        <StackPanel Orientation="Vertical">
+          <RadioButton Content="Произвольный период времени" Name="rbCustomPeriod" GroupName="Period"/>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center" IsEnabled="{Binding ElementName=rbCustomPeriod, Path=IsChecked}">
+            <Label Content="Начало: "/>
+            <DatePicker Name="dpStart" Width="120" SelectedDate="{x:Static sys:DateTime.Today}"/>
+            <Label Content="Конец: "/>
+            <DatePicker Name="dpEnd" Width="120" SelectedDate="{x:Static sys:DateTime.Today}"/>
+          </StackPanel>
+        </StackPanel>
+      </StackPanel>
+    </GroupBox>
+    <GroupBox Header="Проекты" Grid.Row="1" Grid.ColumnSpan="2">
+      <StackPanel Orientation="Vertical">
+        <RadioButton Content="Все проеты" Name="rbAllProjects" IsChecked="True" GroupName="Project"/>
+        <RadioButton Content="Выбрать проекты" Name="rbCustomProjects" GroupName="Project"/>
+        <ListBox Margin="18 0 1 1" Height="100" Name="projectsList"
+                         IsEnabled="{Binding ElementName=rbCustomProjects, Path=IsChecked}">
+          <ListBox.ItemTemplate>
+            <HierarchicalDataTemplate>
+              <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}"/>
+            </HierarchicalDataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </StackPanel>
+    </GroupBox>
+    <GroupBox Header="Шаблон" Grid.Row="2" Grid.ColumnSpan="2">
+      <StackPanel Orientation="Vertical">
+        <Label Content="Путь к шаблонам:"/>
+        <StackPanel Orientation="Horizontal">
+          <TextBox Margin="18 0 1 1" IsEnabled="False" Name="tbTemplatePath" Width="277"/>
+          <Button Content="Выбрать" Name="btnSelectPath" Click="btnSelectPath_Click" Margin="1"/>
+        </StackPanel>
+        <Label Content="Шаблон"/>
+        <ComboBox Margin="18 0 1 1" Name="cbTemplateFileName"/>
+      </StackPanel>
+    </GroupBox>
+    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Name="Ok" Content="Применить" IsDefault="True" Margin="1" Click="Ok_Click"/>
+      <Button Name="Cancel" Content="Отмена" IsCancel="True" Margin="1"/>
+    </StackPanel>
+  </Grid>
+</Window>

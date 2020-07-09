@@ -1,0 +1,28 @@
+﻿<Window x:Class="MyTimeTracker.ImportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:src="clr-namespace:MyTimeTracker"
+        Title="Импорт проектов" WindowStartupLocation="CenterScreen" 
+        ResizeMode="NoResize" ShowInTaskbar="False"  SizeToContent="WidthAndHeight"
+        Style="{StaticResource VS2012WindowStyle}">
+  <StackPanel Background="AliceBlue" Orientation="Vertical">
+    <StackPanel.Resources>
+      <ObjectDataProvider x:Key="MergeChoices" ObjectType="{x:Type src:MergeModes}" MethodName="GetMergeModes" />
+    </StackPanel.Resources>
+    <Label Content="Файл для импорта проектов: " />
+    <StackPanel Orientation="Horizontal" Grid.Row="1">
+      <TextBox Name="tbImportFileName" Width="300" Margin="3" ToolTip="{Binding ElementName=tbImportFileName, Path=Text}" IsReadOnly="True" 
+               Text="{Binding Result.FileName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type src:ImportDialog}}}"/>
+      <Button Name="fileSelect" Content="Выбрать" Click="fileSelect_Click" />
+    </StackPanel>
+    <Label Content="Действия при совпадении имён проектов:" />
+    <ComboBox Name="cbMergeMode" Width="Auto" Margin="3" ItemsSource="{Binding Source={StaticResource MergeChoices}}"
+                SelectedValue="{Binding Path=Result.MergeMode, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                DisplayMemberPath="Value" SelectedValuePath="Key"
+                ToolTip="{Binding ElementName=cbMergeMode, Path=Text}"/>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Name="Ok" Content="Импорт" IsDefault="True" Click="Ok_Click"/>
+      <Button Name="Cancel" Content="Отмена" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
+</Window>

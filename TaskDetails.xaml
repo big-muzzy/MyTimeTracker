@@ -1,0 +1,175 @@
+﻿<UserControl x:Class="MyTimeTracker.TaskDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
+             xmlns:src="clr-namespace:MyTimeTracker" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" ScrollViewer.VerticalScrollBarVisibility="Auto">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <Grid Background="AliceBlue">
+      <Grid.Resources>
+        <src:DateConverter x:Key="dateConverter" />
+        <ObjectDataProvider x:Key="StatesEnum" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
+          <ObjectDataProvider.MethodParameters>
+            <x:Type Type="src:States"/>
+          </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <src:DateTimeToLongConverter x:Key="dateTimeToLongConverter"/>
+        <BitmapImage x:Key="RowEditIco" UriSource="pack://application:,,,/Resources/RowEdit.png"/>
+        <BitmapImage x:Key="RowDeleteIco" UriSource="pack://application:,,,/Resources/RowDelete.png"/>
+      </Grid.Resources>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      <Label VerticalAlignment="Center" Content="Информация о задаче" 
+               Grid.Row="0" HorizontalAlignment="Center"
+               FontWeight="Bold"/>
+      <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Grid.Row="0" Content="Название"/>
+        <TextBox Name="TaskName" Grid.Column="1" Grid.Row="0" 
+                         Margin="0 0 3 0" HorizontalAlignment="Stretch" 
+                     Text="{Binding Path=Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+                RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+        <Label Grid.Column="0" Grid.Row="1" Content="Описание"/>
+        <TextBox Name="TaskDescription" Grid.Column="1" Grid.Row="1" 
+                         Margin="0 0 3 0" HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" Height="60"
+                     Text="{Binding Path=Item.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+                     RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                     TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+      </Grid>
+      <Expander Grid.Row="3" ExpandDirection="Down" 
+                      Header="Необходимый объем работы" 
+                      FontWeight="Bold"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" >
+          <Label Content="По задаче" FontWeight="Normal"/>
+          <TextBox Name="Volume" Width="30" FontWeight="Normal"
+                         Text="{Binding Path=Item.Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+          <Label Content="В подзадачах" FontWeight="Normal"/>
+          <Label FontWeight="Normal" Content="{Binding Path=Item.ChildVolume, Mode=OneWay,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+          <Label Content="Всего" FontWeight="Normal"/>
+          <Label FontWeight="Normal" Content="{Binding Path=Item.TotalVolume, Mode=OneWay,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+        </StackPanel>
+      </Expander>
+      <Expander Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      FontWeight="Bold" Header="Результат" ExpandDirection="Down">
+        <StackPanel Orientation="Horizontal">
+          <Label Content="По задаче" FontWeight="Normal"/>
+          <TextBox Name="Result" Width="30" 
+                         Text="{Binding Path=Item.Result, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                         FontWeight="Normal"/>
+          <Label Content="В подзадачах" FontWeight="Normal"/>
+          <Label Content="{Binding Path=Item.ChildResult, Mode=OneWay,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                       FontWeight="Normal"/>
+          <Label Content="Всего" FontWeight="Normal"/>
+          <Label Content="{Binding Path=Item.TotalResult, Mode=OneWay, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                       FontWeight="Normal"/>
+        </StackPanel>
+      </Expander>
+      <Grid Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" FontWeight="Bold" Content="Время, затраченное на работу"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+          <Label Content="Начало проекта:"/>
+          <Label Content="{Binding Path=Item.TaskStartedAt, Mode=OneWay, Converter={StaticResource dateTimeToLongConverter},
+                        RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+          <Label Content="Конец проекта"/>
+          <Label Content="{Binding Path=Item.TaskEndedAt, Mode=OneWay, Converter={StaticResource dateTimeToLongConverter},
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+          <Label Content="По задаче"/>
+          <Label Content="{Binding Path=Item.Duration, Mode=OneWay, Converter={StaticResource dateConverter},
+                        RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+          <Label Content="В подзадачах"/>
+          <Label Content="{Binding Path=Item.ChildDuration, Mode=OneWay, Converter={StaticResource dateConverter},
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+          <Label Content="Всего"/>
+          <Label Content="{Binding Path=Item.TotalDuration, Mode=OneWay, Converter={StaticResource dateConverter},
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>
+        </StackPanel>
+      </Grid>
+      <Expander Grid.Row="5" ExpandDirection="Down" Header="Периоды работы"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  FontWeight="Bold">
+        <DataGrid  Name="PeriodsGrid"
+                       VerticalAlignment="Stretch" 
+                       HorizontalAlignment="Stretch"
+                       AutoGenerateColumns="False"
+                       SelectionMode="Single" 
+                       Background="#E5F1E4"
+                       HeadersVisibility="Column"
+                       GridLinesVisibility="Vertical"
+                       ClipboardCopyMode="IncludeHeader"
+                       VerticalGridLinesBrush="#C6D7C5"
+                       SelectionUnit="FullRow"
+                       IsReadOnly="False"
+                       ItemsSource="{Binding Path=Item.Periods, Mode=TwoWay, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                       CanUserAddRows="False"
+                       CanUserReorderColumns="False" CanUserSortColumns="False"
+                       FontWeight="Normal"
+                       Height="100"
+                       Margin="0 0 3 0"
+                       HorizontalScrollBarVisibility="Disabled">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Начало периода" Width="*" IsReadOnly="True"
+                                    Binding="{Binding Path=Start, Mode=OneWay,Converter={StaticResource dateTimeToLongConverter}}"/>
+            <DataGridTextColumn Header="Конец периода" Width="*" IsReadOnly="True"
+                                    Binding="{Binding Path=Finish, Mode=OneWay,Converter={StaticResource dateTimeToLongConverter}}"/>
+            <DataGridTextColumn Header="Длительность" Width="*" IsReadOnly="True"
+                                    Binding="{Binding Path=Duration, Mode=OneWay, Converter={StaticResource dateConverter}}"/>
+            <DataGridComboBoxColumn Header="Состояние" Width="Auto"
+                                        ItemsSource="{Binding Source={StaticResource StatesEnum}}"
+                                        SelectedItemBinding="{Binding State, Mode=OneWay}"/>
+            <DataGridTemplateColumn Width="Auto" CanUserReorder="False" CanUserSort="False">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <Button Click="EditPeriod_Click" MinHeight="0" MinWidth="0" Padding="0" Margin="0">
+                    <Image Source="{Binding Source={StaticResource RowEditIco}}" ToolTip="Редактировать период"/>
+                  </Button>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="Auto" CanUserReorder="False" CanUserSort="False">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <Button Click="DeletePeriod_Click" MinHeight="0" MinWidth="0" Padding="0" Margin="0">
+                    <Image Source="{Binding Source={StaticResource RowDeleteIco}}" ToolTip="Удалить период"/>
+                  </Button>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </Expander>
+    </Grid>
+  </ScrollViewer>
+</UserControl>

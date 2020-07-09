@@ -1,0 +1,10 @@
+﻿<NavigationWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="MyTimeTracker.NavigationWindow"
+    Title="Мастер создания отчета"
+    Style="{StaticResource VS2012WindowStyle}"
+    ResizeMode="NoResize" ShowInTaskbar="False" 
+    Width="640" Height="480"
+    WindowStartupLocation="CenterScreen" 
+  />
